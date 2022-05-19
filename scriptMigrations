@@ -1,0 +1,81 @@
+﻿IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+BEGIN
+    CREATE TABLE [__EFMigrationsHistory] (
+        [MigrationId] nvarchar(150) NOT NULL,
+        [ProductVersion] nvarchar(32) NOT NULL,
+        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+    );
+END;
+GO
+
+BEGIN TRANSACTION;
+GO
+
+CREATE TABLE [Armas] (
+    [Id] int NOT NULL IDENTITY,
+    [Nome] nvarchar(max) NULL,
+    [Dano] int NOT NULL,
+    CONSTRAINT [PK_Armas] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Usuarios] (
+    [Id] int NOT NULL IDENTITY,
+    [Username] nvarchar(max) NULL,
+    [PasswordHash] varbinary(max) NULL,
+    [PasswordSalt] varbinary(max) NULL,
+    [Foto] varbinary(max) NULL,
+    [Latitude] nvarchar(max) NULL,
+    [Longitude] nvarchar(max) NULL,
+    [DataAcesso] datetime2 NULL,
+    CONSTRAINT [PK_Usuarios] PRIMARY KEY ([Id])
+);
+GO
+
+CREATE TABLE [Personagens] (
+    [Id] int NOT NULL IDENTITY,
+    [Nome] nvarchar(max) NULL,
+    [PontosVida] int NOT NULL,
+    [Forca] int NOT NULL,
+    [Defesa] int NOT NULL,
+    [Inteligencia] int NOT NULL,
+    [Classe] int NOT NULL,
+    [FotoPersonagem] varbinary(max) NULL,
+    [usuarioId] int NULL,
+    CONSTRAINT [PK_Personagens] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_Personagens_Usuarios_usuarioId] FOREIGN KEY ([usuarioId]) REFERENCES [Usuarios] ([Id]) ON DELETE NO ACTION
+);
+GO
+
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Classe', N'Defesa', N'Forca', N'FotoPersonagem', N'Inteligencia', N'Nome', N'PontosVida', N'usuarioId') AND [object_id] = OBJECT_ID(N'[Personagens]'))
+    SET IDENTITY_INSERT [Personagens] ON;
+INSERT INTO [Personagens] ([Id], [Classe], [Defesa], [Forca], [FotoPersonagem], [Inteligencia], [Nome], [PontosVida], [usuarioId])
+VALUES (1, 1, 23, 17, NULL, 33, N'Frodo', 100, NULL),
+(2, 1, 25, 15, NULL, 30, N'Sam', 100, NULL),
+(3, 3, 21, 18, NULL, 35, N'Galadriel', 100, NULL),
+(4, 2, 18, 18, NULL, 37, N'Gandalf', 100, NULL),
+(5, 1, 17, 20, NULL, 31, N'Hobbit', 100, NULL),
+(6, 3, 13, 21, NULL, 34, N'Celeborn', 100, NULL),
+(7, 2, 11, 25, NULL, 35, N'Radagast', 100, NULL);
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'Classe', N'Defesa', N'Forca', N'FotoPersonagem', N'Inteligencia', N'Nome', N'PontosVida', N'usuarioId') AND [object_id] = OBJECT_ID(N'[Personagens]'))
+    SET IDENTITY_INSERT [Personagens] OFF;
+GO
+
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'DataAcesso', N'Foto', N'Latitude', N'Longitude', N'PasswordHash', N'PasswordSalt', N'Username') AND [object_id] = OBJECT_ID(N'[Usuarios]'))
+    SET IDENTITY_INSERT [Usuarios] ON;
+INSERT INTO [Usuarios] ([Id], [DataAcesso], [Foto], [Latitude], [Longitude], [PasswordHash], [PasswordSalt], [Username])
+VALUES (1, NULL, NULL, NULL, NULL, 0xB58997F14F3DF61F70B42371EE5F58266A7461F6AE016CEB4E4D68D126C0862A638B3B62CB5079FFE266BF60803783B4E7EA1E43D97A13B3DF1836A5FDBF9175, 0x3B6319F448A7A949A078C06275EF862E3C310386F3193967469B41766CD20FB1C9ABC27A12F3B091863787A817B6AD6016582680C47572239DD7C97C21072E592FD91655622A6AAD2A4E9C211B4E9627877CA3669A402FA7ABA50DD0A543CBF1DEB271B519F8E208DB735AFC2D84DF0B804A81091D11363A6820A0623A3CB189, N'UsuarioAdmin');
+IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'Id', N'DataAcesso', N'Foto', N'Latitude', N'Longitude', N'PasswordHash', N'PasswordSalt', N'Username') AND [object_id] = OBJECT_ID(N'[Usuarios]'))
+    SET IDENTITY_INSERT [Usuarios] OFF;
+GO
+
+CREATE INDEX [IX_Personagens_usuarioId] ON [Personagens] ([usuarioId]);
+GO
+
+INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+VALUES (N'20220408003313_MigracaoUsuario', N'5.0.15');
+GO
+
+COMMIT;
+GO
+
